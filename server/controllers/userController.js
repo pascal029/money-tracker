@@ -1,4 +1,6 @@
 const { User, Saldo } = require("../models");
+const { compare } = require("../helpers/bcrypt");
+const { sign } = require("../helpers/jwt");
 
 class UserController {
   static async register(req, res, next) {
@@ -14,7 +16,25 @@ class UserController {
   }
   static async login(req, res, next) {
     try {
-      res.status(200).json({ msg: `Login successful` });
+      const { email, password } = req.body;
+
+      if (!email || !password) throw { name: "credential_required" };
+
+      const user = await User.findOne({ where: { email } });
+
+      if (!user) throw { name: `invalid_credential` };
+
+      const isValidPassword = compare(password, user.password);
+
+      if (!isValidPassword) throw { name: `invalid_credential` };
+
+      const payload = {
+        id: user.id,
+      };
+
+      const access_token = sign(payload);
+
+      res.status(200).json({ access_token });
     } catch (error) {
       next(error);
     }
