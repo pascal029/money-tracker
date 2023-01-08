@@ -1,12 +1,26 @@
-import { ref, computed } from 'vue'
-import { defineStore } from 'pinia'
+import { defineStore } from "pinia";
+import axios from "axios";
 
-export const useCounterStore = defineStore('counter', () => {
-  const count = ref(0)
-  const doubleCount = computed(() => count.value * 2)
-  function increment() {
-    count.value++
-  }
-
-  return { count, doubleCount, increment }
-})
+export const useCounterStore = defineStore("counter", {
+  state: () => ({
+    basedUrl: "http://localhost:3000",
+    user: {},
+  }),
+  actions: {
+    async register(inputBody) {
+      console.log(inputBody);
+      try {
+        await axios({
+          url: this.basedUrl + "/users/register",
+          method: "post",
+          data: inputBody,
+        });
+        Swal.fire("Your account has been Created!");
+        this.router.push("/login");
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async login(inputBody) {},
+  },
+});
