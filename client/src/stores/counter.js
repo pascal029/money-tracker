@@ -8,7 +8,6 @@ export const useCounterStore = defineStore("counter", {
   }),
   actions: {
     async register(inputBody) {
-      console.log(inputBody);
       try {
         await axios({
           url: this.basedUrl + "/users/register",
@@ -21,6 +20,20 @@ export const useCounterStore = defineStore("counter", {
         console.log(error);
       }
     },
-    async login(inputBody) {},
+    async login(inputBody) {
+      try {
+        const { data } = await axios({
+          url: this.basedUrl + "/users/login",
+          method: "post",
+          data: inputBody,
+        });
+        localStorage.setItem("access_token", data.access_token);
+        Swal.fire("Login Successful");
+
+        this.router.push("/dashboard");
+      } catch (error) {
+        console.log(error);
+      }
+    },
   },
 });
