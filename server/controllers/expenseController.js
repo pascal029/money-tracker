@@ -1,9 +1,14 @@
-const { Expense, Saldo } = require("../models");
+const { Expense, Saldo, sequelize } = require("../models");
 
 class ExpenseController {
-  static async addIncome(req, res, next) {
+  static async getExpenses(req, res, next) {
     try {
-      res.status(201).json({ message: "Success add Expense" });
+      const expenses = await Expense.findAll({
+        attributes: [[sequelize.fn("sum", sequelize.col("amount")), "amount"]],
+      });
+
+      console.log(expenses);
+      res.status(201).json({});
     } catch (error) {
       next(error);
     }

@@ -1,4 +1,4 @@
-const { Income, Saldo } = require("../models");
+const { Income, Saldo, sequelize } = require("../models");
 
 class IncomeController {
   static async addIncome(req, res, next) {
@@ -13,6 +13,14 @@ class IncomeController {
     }
   }
 
+  static async getAllIncome(req, res, next) {
+    try {
+      const incomes = await Income.findAll({
+        attributes: [[sequelize.fn("sum", sequelize.col("amount")), "amount"]],
+      });
+      res.status(200).json({ "Total Income": incomes[0].dataValues.amount });
+    } catch (error) {}
+  }
   static async getIncome(req, res, next) {
     try {
       const { id } = req.user;
